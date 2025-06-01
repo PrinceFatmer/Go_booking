@@ -13,7 +13,8 @@ func routes(app *config.AppConfig) http.Handler {
 	mux := chi.NewRouter()
 	mux.Use(middleware.Recoverer)
 	mux.Use(NoSurf)
+	mux.Use(SessionLoader)
 	mux.Get("/", handlers.Repo.Home)
-	mux.Get("/", handlers.Repo.About)
+	mux.Get("/about", handlers.Repo.About)
 	return mux
 }

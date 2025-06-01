@@ -4,11 +4,16 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/PrinceFatmer/booking/pkg/config"
 	"github.com/PrinceFatmer/booking/pkg/handlers"
 	"github.com/PrinceFatmer/booking/pkg/render"
+	"github.com/alexedwards/scs/v2"
 )
+
+var app config.AppConfig
+var session *scs.SessionManager
 
 const portNumber = ":8080"
 
@@ -21,8 +26,15 @@ func main() {
 	// 	}
 	// 	fmt.Println(fmt.Sprintf("Number of ytes written: %d", n))
 	// })
-	var app config.AppConfig
 
+	app.InProduction = false
+	session = scs.New()
+	session.Lifetime = 24 * time.Hour
+	session.Cookie.Persist = true
+	session.Cookie.SameSite = http.SameSiteLaxMode
+	session.Cookie.Secure = app.InProduction
+
+	app.Session = session
 	tc, err := render.CreateTemplateCache()
 	if err != nil {
 		log.Fatal("cannot create template cache")
